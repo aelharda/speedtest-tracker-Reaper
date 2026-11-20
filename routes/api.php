@@ -1,28 +1,19 @@
 <?php
 
-use App\Http\Controllers\Api\V0\GetLatestController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/**
- * Health check route to ensure the API is up and running.
- */
-Route::get('/healthcheck', function () {
-    return response()->json([
-        'message' => 'Speedtest Tracker is running!',
-    ]);
-})->name('healthcheck');
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+*/
 
-/**
- * This route provides backwards compatibility from https://github.com/henrywhitaker3/Speedtest-Tracker
- * for Homepage and Organizr dashboards which expects the returned
- * download and upload values in mbits.
- *
- * @deprecated
- */
-Route::get('/speedtest/latest', GetLatestController::class)
-    ->middleware('accept-json')
-    ->name('speedtest.latest');
-
-Route::middleware(['auth:sanctum', 'throttle:api', 'accept-json'])->group(function () {
-    require __DIR__.'/api/v1/routes.php';
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
 });
+
+// ISP Reaper status endpoint
+Route::get('/isp-reaper/status', function () {
+    return \App\Helpers\IspreaperHelper::getConfig();
+})->middleware('auth:sanctum');
